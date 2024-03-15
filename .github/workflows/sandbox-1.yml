@@ -20,7 +20,7 @@ jobs:
           uses: actions/checkout@v4
         
         - name: Configure AWS credentials
-          uses: aws-actions/configure-aws-credentials@v3
+          uses: aws-actions/configure-aws-credentials@v4
           with:
             role-to-assume: ${{ secrets.AWS_ROLE }} #Declare at Repository secret
             role-session-name: GitHub_Action
@@ -42,8 +42,8 @@ jobs:
                RunPatchBaselineOperation=Scan,
                RunPatchBaselineRebootOption=NoReboot,
                RunPatchBaselineInstallOverrideList='',
-               ResourceGroupName=canary1,
+               ResourceGroupName=canary-1,
                TargetAccounts=804389731471,
                TargetLocationMaxConcurrency=1,
                TargetLocationMaxErrors=1,
-               TargetRegionIds=ap-southeast-2,
+               TargetRegionIds=ap-southeast-2
