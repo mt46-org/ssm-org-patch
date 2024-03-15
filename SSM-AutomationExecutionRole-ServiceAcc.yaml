@@ -1,0 +1,84 @@
+# Role for Service Accounts
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation template to configure a target account for a scheduled multi-account and multi-region Automation patching operation. | Automation Service
+Parameters :
+  ManagementAccountNumber :
+    Type : 'String'
+    Description: 'Account number for the central management account.'
+Resources:
+  AutomationExecutionServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ssm.amazonaws.com
+            AWS: 
+            - !Join [ '', ['arn:', !Ref 'AWS::Partition', ':iam::', !Ref 'ManagementAccountNumber', ':root'] ]
+          Action: sts:AssumeRole
+      Path: "/"
+      RoleName: AWS-SystemsManager-AutomationExecutionRole
+      Policies:
+      - PolicyName: passRole
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - iam:PassRole
+            Resource: 
+            - !Join [ '', ['arn:', !Ref 'AWS::Partition', ':iam::', !Ref 'AWS::AccountId', ':role/AWS-SystemsManager-AutomationExecutionRole'] ]
+      - PolicyName: getTagPermissions
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - tag:GetResources
+            Resource: "*"
+      - PolicyName: listResourceGroupResourcesPermissions
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - resource-groups:listGroupResources
+            Resource: "*"
+      - PolicyName: startAutomationAndCommandPermissions
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ssm:StartAutomationExecution
+            Resource:
+            - arn:aws:ssm:*:*:automation-definition/Automation-RunPatchBaseline:*
+          - Effect: Allow
+            Action:
+            - ssm:SendCommand
+            Resource:
+            - arn:aws:ssm:*::document/AWS-RunPatchBaseline
+            - arn:aws:ec2:*:*:instance/*
+            - arn:aws:ssm:*:*:managed-instance/*
+      - PolicyName: describeEC2AndSSMPermissions
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ec2:DescribeInstanceStatus
+            - ec2:DescribeTags
+            Resource:
+            - "*"
+          - Effect: Allow
+            Action:
+            - ssm:DescribeInstanceInformation
+            - ssm:GetAutomationExecution
+            - ssm:GetParameters
+            - ssm:ListCommands
+            - ssm:ListCommandInvocations
+            Resource:
+            - "*"
