@@ -37,5 +37,5 @@ jobs:
 
         - name: Create StakeSet Instance
           run: |
-            aws cloudformation create-stack-instances --stack-set-name SSM-AutomationExecutiveRole \
+            aws cloudformation create-stack-instances --stack-set-name SSM-AutomationExecutionRole \
                 --deployment-targets OrganizationalUnitIds='["ou-b0uw-h463hxwc"]' --regions '["ap-southeast-2"]'
