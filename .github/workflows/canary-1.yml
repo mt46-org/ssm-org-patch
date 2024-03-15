@@ -1,0 +1,41 @@
+# Controls when the action will run. Invokes the workflow on push events but only for the main branch
+name: Deployment at Canary-1 instances
+on:
+    push:
+      branches: [ main ]
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+  
+  # Permission can be added at job level or workflow level    
+permissions:
+        id-token: write   # This is required for requesting the JWT
+        contents: read    # This is required for actions/checkout
+  
+jobs:
+    SandboxDeployment:
+      runs-on: ubuntu-latest
+      environment: canary-1
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+        
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: ${{ secrets.AWS_ROLE }} #Declare at Repository secret
+            role-session-name: GitHub_Action
+            aws-region: ${{ secrets.AWS_REGION }} #Declare at Repository secret
+
+        - name: Create AWS CloudFormation StackSet
+          run: |
+            aws cloudformation create-stack-set \
+                --stack-set-name SSM-AutomationExecutionRole \
+                --template-body file://SSM-AutomationExecutionRole-ServiceAcc.yaml \
+                --parameters ManagementAccountNumber=Param1,ParameterValue=824066976573 \
+                --permission-model SERVICE_MANAGED \
+                --auto-deployment Enabled=true,RetainStacksOnAccountRemoval=false
+
+        - name: Create StakeSet Instance
+          run: |
+            aws cloudformation create-stack-instances --stack-set-name SSM-AutomationExecutiveRoleCanary1 \
+                --deployment-targets OrganizationalUnitIds='["ou-b0uw-h463hxwc"]' --regions '["ap-southeast-2"]'
