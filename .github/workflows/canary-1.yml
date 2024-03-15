@@ -31,7 +31,7 @@ jobs:
             aws cloudformation create-stack-set \
                 --stack-set-name SSM-AutomationExecutionRole \
                 --template-body file://SSM-AutomationExecutionRole-ServiceAcc.yaml \
-                --parameters ManagementAccountNumber=Param1,ParameterValue=${{ secrets.AWS_MGMT_ACC }} \
+                --parameters ParameterKey=ManagementAccountNumber,ParameterValue=${{ secrets.AWS_MGMT_ACC }} \
                 --permission-model SERVICE_MANAGED \
                 --auto-deployment Enabled=true,RetainStacksOnAccountRemoval=false
 
