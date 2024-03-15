@@ -33,10 +33,10 @@ jobs:
                 --template-body file://SSM-AutomationExecutionRole-ServiceAcc.yaml \
                 --parameters ParameterKey=ManagementAccountNumber,ParameterValue=${{ secrets.AWS_MGMT_ACC }} \
                 --permission-model SERVICE_MANAGED \
-                --auto-deployment Enabled=true,RetainStacksOnAccountRemoval=false
+                --auto-deployment Enabled=true,RetainStacksOnAccountRemoval=false \
+                --capabilities CAPABILITY_NAMED_IAM
 
         - name: Create StakeSet Instance
           run: |
             aws cloudformation create-stack-instances --stack-set-name SSM-AutomationExecutionRole \
-                --deployment-targets OrganizationalUnitIds='["ou-b0uw-h463hxwc"]' --regions '["ap-southeast-2"]' \
-                --capabilities CAPABILITY_NAMED_IAM
+                --deployment-targets OrganizationalUnitIds='["ou-b0uw-h463hxwc"]' --regions '["ap-southeast-2"]'
