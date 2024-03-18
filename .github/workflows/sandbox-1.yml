@@ -43,7 +43,7 @@ jobs:
                RunPatchBaselineRebootOption=NoReboot,
                RunPatchBaselineInstallOverrideList='',
                ResourceGroupName=canary-1,
-               TargetAccounts=804389731471,
+               TargetAccounts=186638637306,
                TargetLocationMaxConcurrency=1,
                TargetLocationMaxErrors=1,
                TargetRegionIds=ap-southeast-2
