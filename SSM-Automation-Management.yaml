@@ -141,7 +141,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties: 
       Code: 
-        ZipFile: > 
+        ZipFile: !Sub |
           import boto3
           import os
           import string
