@@ -77,7 +77,7 @@ jobs:
                MaximumErrors=10%,
                RunPatchBaselineOperation=Install,
                RunPatchBaselineRebootOption=NoReboot,
-               RunPatchBaselineInstallOverrideList='',
+               RunPatchBaselineInstallOverrideList='s3://ct-patch-override-list/Q1-2024.yml',
                ResourceGroupName=canary-1,
                TargetAccounts=186638637306,
                TargetLocationMaxConcurrency=1,
