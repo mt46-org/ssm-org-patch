@@ -135,7 +135,9 @@
                 "lambda:UpdateFunctionCodeSigningConfig",
                 "lambda:UpdateFunctionConfiguration",
                 "lambda:UpdateFunctionEventInvokeConfig",
-                "lambda:UpdateFunctionUrlConfig"
+                "lambda:UpdateFunctionUrlConfig",
+                "lambda:RemovePermission",
+                "lambda:DeleteFunction"
             ],
             "Resource": "*"
         },
@@ -162,7 +164,9 @@
                 "iam:PutRolePolicy",
                 "iam:PutUserPolicy",
                 "iam:TagPolicy",
-                "iam:TagRole"
+                "iam:TagRole",
+                "iam:DeleteRolePolicy",
+                "iam:DeleteRole"
             ],
             "Resource": "*"
         }
