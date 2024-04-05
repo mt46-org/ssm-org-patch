@@ -4,12 +4,12 @@ Description: AWS CloudFormation template to create a scheduled multi-account and
 Parameters:
   InitialSetup:
     Type: String
-    Default: YES
+    Default: Provision
     AllowedValues:
-      - YES
-      - NO
+      - Provision
+      - Skip
     Description: >-
-      Manadatory decalaration to setup required resources
+      (Required) Decalaration to setup required resources
   EventBridgeRuleSchedule:
     Type: String
     Description: >-
@@ -85,23 +85,23 @@ Conditions:
   CreateEventBridgeRuleCondition:
     Fn::Equals:
     - Ref: InitialSetup
-    - YES
+    - Provision
   CreatePermissionForEventsToInvokeLambdaCondition:
     Fn::Equals:
     - Ref: InitialSetup
-    - YES
+    - Provision
   CreateAWSLambdaSSMMultiAccountPatchingRoleCondition:
     Fn::Equals:
     - Ref: InitialSetup
-    - YES
+    - Provision
   CreateMultiAccountPatchingLambdaFunctionCondition:
     Fn::Equals:
     - Ref: InitialSetup
-    - YES
+    - Provision
   CreateAutomationDocumentMamrRunPatchBaselineCondition:
     Fn::Equals:
     - Ref: InitialSetup
-    - YES
+    - Provision
 
 Resources:
   EventBridgeRule:
