@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: S3 bucket for Patch Override List
+Resources:
+  PatchOverrideListBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: ct-patch-override-list
+
+  PatchOverrideListPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref PatchOverrideListBucket
+      PolicyDocument:
+        Statement:
+          - Action: 's3:*'
+            Effect: Allow
+            Resource: !Sub 'arn:aws:s3:::${PatchOverrideListBucket}/*'
+            Principal: '*'
+
+Outputs:
+  BucketName:
+    Value: !Ref PatchOverrideListBucket
+    Description: Name of the S3 bucket

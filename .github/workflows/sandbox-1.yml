@@ -25,6 +25,18 @@ jobs:
             role-to-assume: ${{ secrets.AWS_ROLE }} #Declare at Repository secret
             role-session-name: GitHub_Action
             aws-region: ${{ secrets.AWS_REGION }} #Declare at Repository secret
+        
+        - name: Deploy Patch Override List
+          uses: aws-actions/aws-cloudformation-github-deploy@v1
+          with:
+            name: SSM-Patch-Override-List
+            template: SSM-Automation-OverrideList.yaml
+            no-fail-on-empty-changeset: "1"
+            capabilities: CAPABILITY_NAMED_IAM
+
+        - name: Copy Patch Override File with the AWS CLI
+          run: |
+            aws s3 cp patch-override-list/Q1-2024.yaml s3://ct-patch-override-list
 
         - name: Deploy to AWS organization
           uses: aws-actions/aws-cloudformation-github-deploy@v1

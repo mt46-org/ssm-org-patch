@@ -1,0 +1,7 @@
+patches:
+    -
+        id: 'aide.x86_64'
+        title: '*0:0.16-14.el8_5.1'
+    -
+        id: 'cyrus-sasl-*.x86_64'
+        title: '*0:2.1.27-6.el8_5'
