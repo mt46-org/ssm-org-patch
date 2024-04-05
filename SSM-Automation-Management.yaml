@@ -266,7 +266,7 @@ Resources:
   AutomationDocumentMamrRunPatchBaseline:
     Type: AWS::SSM::Document
     Properties: 
-      Name: Automation-RunPatchBaseline
+      Name: !Sub Automation-RunPatchBaseline-${TaskName}
       DocumentType: Automation
       Content:
         description: >-
