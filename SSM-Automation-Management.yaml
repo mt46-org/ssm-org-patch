@@ -2,14 +2,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS CloudFormation template to create a scheduled multi-account and multi-Region patching operation using Amazon EventBridge, AWS Lambda, and AWS Systems Manager Automation.
 Parameters:
-  InitialSetup:
+  TaskName:
     Type: String
-    Default: Provision
-    AllowedValues:
-      - Provision
-      - Skip
     Description: >-
-      (Required) Decalaration to setup required resources
+      (Required) Unique description of the task. Define meaningful Short Name. For example: DailyScan
   EventBridgeRuleSchedule:
     Type: String
     Description: >-
@@ -82,29 +78,13 @@ Conditions:
     Fn::Equals:
     - Ref: ExistingAutomationAdministrationRole
     - ''
-  CreatePermissionForEventsToInvokeLambdaCondition:
-    Fn::Equals:
-    - Ref: InitialSetup
-    - Provision
-  CreateAWSLambdaSSMMultiAccountPatchingRoleCondition:
-    Fn::Equals:
-    - Ref: InitialSetup
-    - Provision
-  CreateMultiAccountPatchingLambdaFunctionCondition:
-    Fn::Equals:
-    - Ref: InitialSetup
-    - Provision
-  CreateAutomationDocumentMamrRunPatchBaselineCondition:
-    Fn::Equals:
-    - Ref: InitialSetup
-    - Provision
 
 Resources:
   EventBridgeRule:
     Type: AWS::Events::Rule
     Properties:
       Description: EventBridge rule created for scheduled multi-account and multi-Region Automation patching using AWS Lambda and AWS Systems Manager Automation
-      Name: Schedule-Trigger-for-Lambda-MultiAccountPatching
+      Name: !Sub Schedule-Trigger-for-Lambda-MultiAccountPatching-${TaskName}
       ScheduleExpression:
         Ref: EventBridgeRuleSchedule
       State: ENABLED
@@ -113,10 +93,9 @@ Resources:
           Fn::GetAtt:
           - MultiAccountPatchingLambdaFunction
           - Arn
-        Id: MultiAccountPatching
+        Id: !Sub MultiAccountPatching-${TaskName}
   PermissionForEventsToInvokeLambda:
     Type: AWS::Lambda::Permission
-    Condition: CreatePermissionForEventsToInvokeLambdaCondition
     Properties:
       FunctionName:
         Ref: MultiAccountPatchingLambdaFunction
@@ -128,9 +107,8 @@ Resources:
         - Arn
   AWSLambdaSSMMultiAccountPatchingRole:
     Type: AWS::IAM::Role
-    Condition: CreateAWSLambdaSSMMultiAccountPatchingRoleCondition
     Properties:
-      RoleName: AWS-Lambda-SSM-MultiAccountPatchingRole
+      RoleName: !Sub AWS-Lambda-SSM-MultiAccountPatchingRole-${TaskName}
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -141,7 +119,7 @@ Resources:
           Action: sts:AssumeRole
       Path: "/"
       Policies:
-      - PolicyName: AWSLambdaSSMMultiAccountPatchingPolicy
+      - PolicyName: !Sub AWSLambdaSSMMultiAccountPatchingPolicy-${TaskName}
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -166,7 +144,6 @@ Resources:
             Effect: Allow
   MultiAccountPatchingLambdaFunction:
     Type: AWS::Lambda::Function
-    Condition: CreateMultiAccountPatchingLambdaFunctionCondition
     Properties: 
       Code: 
         ZipFile: |
@@ -253,7 +230,7 @@ Resources:
             ExecutionRoleName: !Ref ExecutionRoleName
             MasterAccountID: !Sub ${AWS::AccountId}
             AutomationDocumentMamrRunPatchBaseline: !Ref AutomationDocumentMamrRunPatchBaseline
-      FunctionName: MultiAccountPatching
+      FunctionName: !Sub MultiAccountPatching-${TaskName}
       Handler: index.handler
       Role: !GetAtt AWSLambdaSSMMultiAccountPatchingRole.Arn 
       Runtime: python3.12
@@ -288,7 +265,6 @@ Resources:
             - "*"
   AutomationDocumentMamrRunPatchBaseline:
     Type: AWS::SSM::Document
-    Condition: CreateAutomationDocumentMamrRunPatchBaselineCondition
     Properties: 
       Name: Automation-RunPatchBaseline
       DocumentType: Automation
