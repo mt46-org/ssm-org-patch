@@ -82,10 +82,6 @@ Conditions:
     Fn::Equals:
     - Ref: ExistingAutomationAdministrationRole
     - ''
-  CreateEventBridgeRuleCondition:
-    Fn::Equals:
-    - Ref: InitialSetup
-    - Provision
   CreatePermissionForEventsToInvokeLambdaCondition:
     Fn::Equals:
     - Ref: InitialSetup
@@ -106,7 +102,6 @@ Conditions:
 Resources:
   EventBridgeRule:
     Type: AWS::Events::Rule
-    Condition: CreateEventBridgeRuleCondition
     Properties:
       Description: EventBridge rule created for scheduled multi-account and multi-Region Automation patching using AWS Lambda and AWS Systems Manager Automation
       Name: Schedule-Trigger-for-Lambda-MultiAccountPatching
