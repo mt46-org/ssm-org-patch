@@ -36,7 +36,7 @@ jobs:
 
         - name: Copy Patch Override File with the AWS CLI
           run: |
-            aws s3 cp patch-override-list/Q1-2024.yaml s3://ct-patch-override-list
+            aws s3 cp patch-override-list/Q1-2024.yml s3://ct-patch-override-list
 
         - name: Deploy to AWS organization
           uses: aws-actions/aws-cloudformation-github-deploy@v1
