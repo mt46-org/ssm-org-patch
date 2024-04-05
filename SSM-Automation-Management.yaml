@@ -2,6 +2,14 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS CloudFormation template to create a scheduled multi-account and multi-Region patching operation using Amazon EventBridge, AWS Lambda, and AWS Systems Manager Automation.
 Parameters:
+  InitialSetup:
+    Type: String
+    Default: YES
+    AllowedValues:
+      - YES
+      - NO
+    Description: >-
+      Manadatory decalaration to setup required resources
   EventBridgeRuleSchedule:
     Type: String
     Description: >-
@@ -74,9 +82,31 @@ Conditions:
     Fn::Equals:
     - Ref: ExistingAutomationAdministrationRole
     - ''
+  CreateEventBridgeRuleCondition:
+    Fn::Equals:
+    - Ref: InitialSetup
+    - YES
+  CreatePermissionForEventsToInvokeLambdaCondition:
+    Fn::Equals:
+    - Ref: InitialSetup
+    - YES
+  CreateAWSLambdaSSMMultiAccountPatchingRoleCondition:
+    Fn::Equals:
+    - Ref: InitialSetup
+    - YES
+  CreateMultiAccountPatchingLambdaFunctionCondition:
+    Fn::Equals:
+    - Ref: InitialSetup
+    - YES
+  CreateAutomationDocumentMamrRunPatchBaselineCondition:
+    Fn::Equals:
+    - Ref: InitialSetup
+    - YES
+
 Resources:
   EventBridgeRule:
     Type: AWS::Events::Rule
+    Condition: CreateEventBridgeRuleCondition
     Properties:
       Description: EventBridge rule created for scheduled multi-account and multi-Region Automation patching using AWS Lambda and AWS Systems Manager Automation
       Name: Schedule-Trigger-for-Lambda-MultiAccountPatching
@@ -91,6 +121,7 @@ Resources:
         Id: MultiAccountPatching
   PermissionForEventsToInvokeLambda:
     Type: AWS::Lambda::Permission
+    Condition: CreatePermissionForEventsToInvokeLambdaCondition
     Properties:
       FunctionName:
         Ref: MultiAccountPatchingLambdaFunction
@@ -102,6 +133,7 @@ Resources:
         - Arn
   AWSLambdaSSMMultiAccountPatchingRole:
     Type: AWS::IAM::Role
+    Condition: CreateAWSLambdaSSMMultiAccountPatchingRoleCondition
     Properties:
       RoleName: AWS-Lambda-SSM-MultiAccountPatchingRole
       AssumeRolePolicyDocument:
@@ -139,6 +171,7 @@ Resources:
             Effect: Allow
   MultiAccountPatchingLambdaFunction:
     Type: AWS::Lambda::Function
+    Condition: CreateMultiAccountPatchingLambdaFunctionCondition
     Properties: 
       Code: 
         ZipFile: |
@@ -260,6 +293,7 @@ Resources:
             - "*"
   AutomationDocumentMamrRunPatchBaseline:
     Type: AWS::SSM::Document
+    Condition: CreateAutomationDocumentMamrRunPatchBaselineCondition
     Properties: 
       Name: Automation-RunPatchBaseline
       DocumentType: Automation

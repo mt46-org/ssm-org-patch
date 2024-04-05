@@ -34,6 +34,7 @@ jobs:
             no-fail-on-empty-changeset: "1"
             capabilities: CAPABILITY_NAMED_IAM
             parameter-overrides: >-
+               InitialSetup=YES
                EventBridgeRuleSchedule=cron(0/10 * * * ? *),
                ExecutionRoleName=AWS-SystemsManager-AutomationExecutionRole,
                ExistingAutomationAdministrationRole='',
@@ -56,6 +57,7 @@ jobs:
             no-fail-on-empty-changeset: "1"
             capabilities: CAPABILITY_NAMED_IAM
             parameter-overrides: >-
+               InitialSetup=NO
                EventBridgeRuleSchedule=cron(0/10 * * * ? *),
                ExecutionRoleName='',
                ExistingAutomationAdministrationRole=AWS-SystemsManager-AutomationExecutionRole,
