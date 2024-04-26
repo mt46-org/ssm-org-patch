@@ -1,0 +1,34 @@
+name: Deployment at Management
+on:
+    push:
+      branches: [ main ]
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+  
+  # Permission can be added at job level or workflow level    
+permissions:
+        id-token: write   # This is required for requesting the JWT
+        contents: read    # This is required for actions/checkout
+  
+jobs:
+    ManagementDeployment:
+      runs-on: ubuntu-latest
+      environment: mgmt-1
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+        
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: ${{ secrets.AWS_ROLE }} #Declare at Repository secret
+            role-session-name: GitHub_Action
+            aws-region: ${{ secrets.AWS_REGION_PATCH_BASELINE }} #Declare at Repository secret
+
+        - name: Deploy SSM Custom Patch Baseline
+          uses: aws-actions/aws-cloudformation-github-deploy@v1
+          with:
+              name: SSM-Custom-Patch-Baseline
+              template: SSM-CustomPatchBaseline.yaml
+              no-fail-on-empty-changeset: "1"
+              capabilities: CAPABILITY_NAMED_IAM

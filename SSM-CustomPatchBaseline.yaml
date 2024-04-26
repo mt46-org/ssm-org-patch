@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation template to create a custom patch baseline with approval rules'
+Resources:
+  PatchBasline:
+    Type: 'AWS::SSM::PatchBaseline'
+    Properties:
+      Name: RHEL8-quarterly-security-patch-baseline
+      Description: RHEL8 Quarterly Security Custom patch baseline
+      OperatingSystem: REDHAT_ENTERPRISE_LINUX
+      PatchGroups:
+        - RHEL8-security-custom-patch-group
+        - quarterly-security-patch-group
+      ApprovalRules:
+        PatchRules:
+          - ApproveAfterDays: '120'
+            PatchFilterGroup:
+              PatchFilters:
+                - Key: PRODUCT
+                  Values:
+                    - '*'
+                - Key: CLASSIFICATION
+                  Values:
+                    - Security
+                - Key: SEVERITY
+                  Values:
+                    - Critical
+                    - Important
+            EnableNonSecurity: false
+Parameters: {}
+Metadata: {}
+Conditions: {}
